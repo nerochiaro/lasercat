@@ -1,0 +1,11 @@
+Wishlist
+
+- object tree
+- import from iframe -> dpi -> selective (tree)
+- ui elements on/off buttons
+- path to polylines or selective bezier to polyline
+- point viewer/selector
+
+todo:
+- generalize to use svg polylines directly if possible
+- rotate seams / generalized p1->p2 seam
