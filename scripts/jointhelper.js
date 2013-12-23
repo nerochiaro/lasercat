@@ -44,15 +44,6 @@ function prepare(id, rulers, grid) {
     Element.prototype.translate = function (x, y) {
       return this.transform(new Snap.Matrix().translate(x, y));
     }
-    Element.prototype.hide = function () {
-      this._oldStroke = this.attr("stroke");
-      return this.attr({ stroke: "none" });
-    };
-    Element.prototype.show = function () {
-      this.attr({ stroke: this._oldStroke });
-      delete this._oldStroke
-      return this;
-    };
   });
   
   ui = s.g();
