@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="jquery-1.10.2.min.js"></script>
+        <script src="snap.svg-min.js"></script>
+        <script src="primitives.js"></script>
+        <script src="joints.js"></script>
+        <script src="jointhelper.js"></script>
+        <script type="text/javascript">
+                           
+          $(document).ready(function() {
+            var s = prepare("#output", true, false);
+            
+            je = new BoxJoint({ tabWidth: 10, thickness: 3, kerf: 0.17 });
+            b = new Box(36, 40);
+            
+            b.splitWith(je, 20, 2).translate(10, 10).cut(); 
+            
+            function crossJoint() {
+              return s.g(
+                s.g(
+                  s.rect(5 - 3 / 2, 0, 3, 5).cut(),
+                  s.rect(0, 0, 10, 10).cut()
+                ),
+                s.g(
+                  s.rect(5 - 3 / 2, 0, 3, 5).cut(),
+                  s.rect(0, 0, 10, 10).cut()
+                ).translate(11, 0)
+              ).translate(2, 2);
+            }
+          });
+        </script>
+        <style>
+          body { margin: 0; font: 8pt Ubuntu, Tahoma, Arial, sans-serif }
+          #output { border: 1px solid red }
+          #controls { border: 2px solid black; position: fixed;
+                      bottom: 0px; width: 100%;
+                      background-color: lightyellow; padding-left: 4px; }
+          #return, #content { display: none }
+        </style>
+    </head>
+    <body>
+      <svg id="output" />
+      <div id="controls">
+        <form method='POST' enctype='multipart/form-data' accept-charset="utf-8"
+            action='' target='return'
+            id="reflectform">
+          <textarea id="content" name="content"></textarea>
+          <input type="text" name="filename" id="filename" value="drawing.svg">
+          <a href="#save" id="save">Save</a>
+        </form>
+      </div>
+      <iframe id="return" name="return"/>
+    </body>
+</html>
