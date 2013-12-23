@@ -19,7 +19,7 @@ requirejs(
         // TODO: re-enable UI
       });
      
-      bj = new BoxJoint({ tabWidth: 10, thickness: 3, kerf: 0.17 });
+      bj = je.boxJoint({ tabWidth: 10, thickness: 3, kerf: 0.17 });
       b = je.box(36, 40);
       
       b.splitWith(bj, 20, 2).translate(10, 10).cut(); 

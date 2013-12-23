@@ -97,7 +97,9 @@ define(["./primitives", "./joints"], function(primitives, joints) {
       return this;
     },
     
-    box: function(width, height) { return new primitives.box(this.s, width, height) }
+    box: function(width, height) { return new primitives.box(this.s, width, height) },
+    polyline: function(points) { return new primitives.polyline(this.s, points) },
+    boxJoint: function(tabWidth, thickness, kerf) { return new joints.boxJoint(this.s, tabWidth, thickness, kerf) }
   }
   
 });
