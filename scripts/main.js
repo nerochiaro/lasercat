@@ -21,19 +21,27 @@ requirejs(
           
       var sys = je.moduleSystem(10, 3, 0.17);
       
-      function gridOf1x1(width, height, exploded) {
+      function gridOf1x1(width, height, exploded, holes) {
+        var g = je.s.g();
         var distance = (exploded) ? sys.unit + (2 * sys.kerf) : sys.unit - sys.thickness;
         for (var k = 0; k < height; k++) {
           for (var i = 0; i < width; i++) {
-            var part;
-            part = je.s.polyline(sys.unitBox()).cut();
-            part.translate(distance * i, distance * k)
-            if ((i + (k % 2)) % 2 != 0) part.rotate(90);
+            var partGroup = je.s.g();
+            if (holes) {
+              partGroup.add(je.s.rect(sys.step, sys.step, sys.step * 2, sys.step * 2));
+            }
+            var rotated = (i + (k % 2)) % 2 != 0;
+            partGroup.add(je.s.polyline(sys.unitBox(null, rotated)));
+            
+            partGroup.translate(distance * i, distance * k)
+            g.add(partGroup);
           }
         }
+        return g;
       }
       
-      gridOf1x1(4, 3, true);
+      gridOf1x1(3, 3, true, true).translate(0.01, 0.01).cut();
+      
       
       function num4of2x1withHole() {       
         var space = 2 * sys.kerf
