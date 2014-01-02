@@ -57,11 +57,8 @@ requirejs(
 );
 
 //TODO:
-/*
-- convert to PDF straight away by launching inkscape with some cmd line opt or imagemagick ?
-  - problem: inkscape in.svg -C -d 600 -E out.pdf will not recognize the viewBox width and height
-    so the document will not be the correct size
-    
+/*  
 - output the exploded box/structure preview in openjscad
-  
+- print raster marks around the bounding box of all the pieces to easily check alignement 
+  when using scrap
 */

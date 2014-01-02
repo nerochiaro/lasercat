@@ -25,11 +25,11 @@ class MyHandler(BaseHTTPRequestHandler):
               with open(tmp_src, "w") as f:
                 f.write(query.get('content')[0])
             except Exception as e:
-              print "Open tmp file failed:", e
-             
-            call(['inkscape', tmp_src, '-C', '-d', '600', '-E', tmp_dst])
+              print "Open tmp file failed:", e         
+
+            call(['cairosvg', tmp_src, '-d', '600', '-f', 'pdf', '-o', tmp_dst])
             
-            with open(tmp_dst, "r") as f:     
+            with open(tmp_dst, "r") as f:
               s = f.read()
               self.wfile.write(s)
             
