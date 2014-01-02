@@ -1,8 +1,14 @@
-define(["./primitives", "./joints"], function(primitives, joints) {
+define(["./primitives", "./joints", "./modular"], 
+       function(primitives, joints, modular) {
   Array.prototype.formatPath = function() {
     return this.map(function(point) {
       return point[0] + "," + point[1];
     }).join(" ");
+  }
+  Array.prototype.offsetPath = function(dx, dy) {
+    return this.map(function(point) {
+      return [point[0] + dx, point[1] + dy];
+    });
   }
 
   Array.prototype.last = function() { return this[this.length - 1]; }
@@ -57,7 +63,7 @@ define(["./primitives", "./joints"], function(primitives, joints) {
   }
 
   return {
-    prepare: function(id, rulers, grid) {
+    prepare: function(id, useRulers, useGrid) {
       $("#output").width(bedWidth + "mm").height(bedHeight + "mm");
                 
       this.s = Snap(id);
@@ -80,16 +86,36 @@ define(["./primitives", "./joints"], function(primitives, joints) {
       Snap.plugin(function (Snap, Element, Paper, global) {
         // Simplify stroking things that need to be cut by the laser
         Element.prototype.cut = function () {
-          return this.attr({ stroke: "grey", strokeWidth: cutWidth, fill: "none" });
+          return this.fill().stroke(cutWidth);
+        };
+        Element.prototype.stroke = function (width, color) {
+          return this.attr({ strokeWidth: width, stroke: (color) ? color : "black" });
+        };
+        Element.prototype.fill = function (color) {
+          return this.attr({ fill: (color) ? color : "none" });
         };
         Element.prototype.translate = function (x, y) {
-          return this.transform(new Snap.Matrix().translate(x, y));
+          var m = new Snap.Matrix().translate(x, y);
+          if (this.matrix) this.transform(this.matrix.add(m));
+          else this.transform(m);
+          return this;
+        }
+        Element.prototype.rotate = function (a, x, y) {
+          if (arguments.length == 1) {
+            var box = this.getBBox();
+            x = box.width / 2;
+            y = box.height / 2;
+          }
+          var m = new Snap.Matrix().rotate(a, x, y);
+          if (this.matrix) this.transform(this.matrix.add(m));
+          else this.transform(m);
+          return this;
         }
       });
       
       this.ui = this.s.g();
-      if (grid) grid = this.ui.add(grid(this.s, "lightgrey", 0.05));
-      if (rulers) {
+      if (useGrid) grid = this.ui.add(grid(this.s, "lightgrey", 0.1));
+      if (useRulers) {
         xruler = this.ui.add(ruler(this.s, bedWidth, false));
         yruler = this.ui.add(ruler(this.s, bedHeight, true));
       }
@@ -99,7 +125,8 @@ define(["./primitives", "./joints"], function(primitives, joints) {
     
     box: function(width, height) { return new primitives.box(this.s, width, height) },
     polyline: function(points) { return new primitives.polyline(this.s, points) },
-    boxJoint: function(tabWidth, thickness, kerf) { return new joints.boxJoint(this.s, tabWidth, thickness, kerf) }
+    boxJoint: function(tabWidth, thickness, kerf) { return new joints.boxJoint(this.s, tabWidth, thickness, kerf) },
+    moduleSystem: function(step, thickness, kerf) { return new modular.moduleSystem(step, thickness, kerf) }
   }
   
 });
