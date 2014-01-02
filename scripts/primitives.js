@@ -32,60 +32,7 @@ define(function() {
     }
   }
 
-  // Defines a box of width and height in its own coordinate spaces
-  function Box(s, width, height) {
-    this.width = width;
-    this.height = height;
-    this.path = [[0, 0], [0, this.height], 
-                [this.width, this.height], [this.width, 0]];
-    
-    this.draw = function() {
-      return s.polygon(this.path);
-    }
-    
-    this.translate = function (x, y) { 
-      this.path = translatePath(this.path, x, y);
-      return this;
-    }
-
-    // Split this box with the specified joint atY
-    // The two edges of the joint will be drawn edgeSpacing apart.
-    this.splitWith = function(joint, atY, edgeSpacing) {
-      var y;
-      var edges = joint.horizontal(width);
-      
-      // Move each edge to its final position above or
-      // below the cut, respecting the requested edgeSpacing.
-      // Then add points to complete the two halves of the box
-      // starting from each edge.
-
-      var topEdge = new Polyline(edges[0]);
-      y = atY - edgeSpacing / 2 - joint.height;
-      topEdge.translate(0, y);
-      topEdge.points = topEdge.points.concat([
-        [topEdge.points.last()[0], 0], // top-right
-        [0, 0], // top-left
-        [0, y]  // edge start (mid-left)
-      ]);
-      
-      var bottomEdge = new Polyline(edges[1]);
-      y = atY + edgeSpacing / 2;
-      bottomEdge.translate(0, y);
-      bottomEdge.points = bottomEdge.points.concat([
-        [bottomEdge.points.last()[0], this.height], // bottom-right
-        [0, this.height], // bottom-left
-        [0, y] // edge start (mid-left)
-      ]);
-                                  
-      return s.g(
-        s.polyline(topEdge.points),
-        s.polyline(bottomEdge.points)
-      );
-    }
-  }
-    
   return {
-      box: Box,
       polyline: Polyline
   }
 });
