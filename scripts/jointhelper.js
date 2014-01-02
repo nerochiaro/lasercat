@@ -1,5 +1,5 @@
-define(["./primitives", "./joints", "./modular"], 
-       function(primitives, joints, modular) {
+define(["./primitives", "./modular"], 
+       function(primitives, modular) {
   Array.prototype.formatPath = function() {
     return this.map(function(point) {
       return point[0] + "," + point[1];
@@ -123,9 +123,7 @@ define(["./primitives", "./joints", "./modular"],
       return this;
     },
     
-    box: function(width, height) { return new primitives.box(this.s, width, height) },
     polyline: function(points) { return new primitives.polyline(this.s, points) },
-    boxJoint: function(tabWidth, thickness, kerf) { return new joints.boxJoint(this.s, tabWidth, thickness, kerf) },
     moduleSystem: function(step, thickness, kerf) { return new modular.moduleSystem(step, thickness, kerf) }
   }
   
