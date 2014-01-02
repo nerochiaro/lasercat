@@ -5,46 +5,35 @@ from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 #import pri
 import sys
+from subprocess import call
 
 class MyHandler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        print self.path
-        try:
-            if self.path == "/reflect":
-                f = open(curdir + sep + self.path) #self.path has /test.html
-
-                self.send_response(200)
-                self.send_header('Content-type',	'text/html')
-                self.end_headers()
-                self.wfile.write(f.read())
-                f.close()
-                return
-            if self.path.endswith(".esp"):   #our dynamic content
-                self.send_response(200)
-                self.send_header('Content-type',	'text/html')
-                self.end_headers()
-                self.wfile.write("hey, today is the" + str(time.localtime()[7]))
-                self.wfile.write(" day in the year " + str(time.localtime()[0]))
-                return
-                
-            return
-                
-        except IOError:
-            self.send_error(404,'File Not Found: %s' % self.path)
-     
-
     def do_POST(self):
         try:
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             if ctype == 'multipart/form-data':
                 query=cgi.parse_multipart(self.rfile, pdict)
+
             self.send_response(200)
-            self.send_header('Content-type',  'text/svg')
+            self.send_header('Content-type',  'application/pdf')
+            self.send_header('Content-Disposition', 'attachment')
             self.end_headers()
-            self.wfile.write(query.get('content')[0]);
             
-        except :
+            tmp_src = "/tmp/convert-inkscape.svg"
+            tmp_dst = "/tmp/convert-inkscape.pdf"
+            try:
+              with open(tmp_src, "w") as f:
+                f.write(query.get('content')[0])
+            except Exception as e:
+              print "Open tmp file failed:", e
+             
+            call(['inkscape', tmp_src, '-C', '-d', '600', '-E', tmp_dst])
+            
+            with open(tmp_dst, "r") as f:     
+              s = f.read()
+              self.wfile.write(s)
+            
+        except:
             pass
 
 def main():
