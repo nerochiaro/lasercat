@@ -19,7 +19,7 @@ requirejs(
         // TODO: re-enable UI
       });
           
-      var sys = je.moduleSystem(10, 3, 0.17);
+      var sys = je.moduleSystem(10, 3, 0.14);
       
       function gridOf1x1(width, height, exploded, holes) {
         var g = je.s.g();
@@ -40,26 +40,41 @@ requirejs(
         return g;
       }
       
-      gridOf1x1(3, 3, true, true).translate(0.01, 0.01).cut();
+      //gridOf1x1(6, 1, true, true).translate(0.01, 0.01).cut();
       
-      
-      function num4of2x1withHole() {       
-        var space = 2 * sys.kerf
+      function gridOf2x1(width, height, options) {       
+        var space = 2 * sys.kerf;
+        var elementWidth = sys.unit * 2 - sys.thickness;
+        var elementHeight = sys.unit;
         var g = je.s.g();
-        for (var i = 0; i < 4; i++) {
-          g.add(
-            je.s.polyline(sys.multiBox(2, 1)).rotate(90, 0, 0)
-                          .translate(0, - sys.unit - (i * (sys.unit + space)))
-          );
-          g.add(
-            je.s.rect(sys.step, sys.step, sys.step * 2, (sys.unit * 2) - sys.thickness - sys.step * 2)
-            .translate(i * (sys.unit + space), 0)
-          )
+        for (var k = 0; k < height; k++) {
+          for (var i = 0; i < width; i++) {
+            var xpos = elementWidth * i + space * i;
+            var ypos = elementHeight * k + space * k;
+            var unitGroup = je.s.g();
+            unitGroup.add(
+              je.s.polyline(sys.multiBox(2, 1))
+            );
+            if (options.holes) {
+              unitGroup.add(
+                je.s.rect(sys.step, sys.step,
+                          elementWidth - 2 * sys.step, elementHeight - 2  * sys.step)
+              )
+            }
+            unitGroup.translate(xpos, ypos);
+            g.add(unitGroup);
+          }
         }
-        g.translate(sys.kerf, sys.kerf).cut();
+        if (options.rotated) {
+          g.rotate(90);
+          g.translate(elementHeight - sys.thickness, 
+                      (elementWidth - sys.thickness) / 2);
+        }
+        return g;
       }
       
-      //num4of2x1withHole();
+     gridOf2x1(1, 1, { rotate: true, holes: true, exploded: true })
+     .translate(0.01, 0.01).cut();
     });
   }
 );
