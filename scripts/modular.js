@@ -19,82 +19,129 @@ define(function() {
         var points = [];
         if (rotated !== true) {
           if (sides.top) {
-              points.push([0, this.thickness]);
-              points.push([this.step - this.kerf, this.thickness]);
-              points.push([this.step - this.kerf, 0]);
-              points.push([this.step * 3 + this.kerf, 0]);
-              points.push([this.step * 3 + this.kerf, this.thickness]);
-              points.push([this.step * 4, this.thickness]);
+              points = points.concat([
+                [0, this.thickness],
+                [this.step - this.kerf, this.thickness],
+                [this.step - this.kerf, 0],
+                [this.step * 1.5 + this.kerf, 0],
+                [this.step * 1.5 + this.kerf, this.thickness],
+                [this.step * 2.5 - this.kerf, this.thickness],
+                [this.step * 2.5 - this.kerf, 0],
+                [this.step * 3 + this.kerf, 0],
+                [this.step * 3 + this.kerf, this.thickness],
+                [this.unit, this.thickness]
+              ]);
           }
           if (sides.right) {
               if (sides.top !== true) 
-                points.push([this.step * 4, this.thickness]);
-              points.push([this.step * 4, this.step]);
-              points.push([this.step * 4 - this.thickness, this.step]);
-              points.push([this.step * 4 - this.thickness, this.step * 3]);
-              points.push([this.step * 4, this.step * 3]);
-              points.push([this.step * 4, this.step * 4 - this.thickness]);
-              points.push([this.step * 4 - this.thickness, this.step * 4 - this.thickness]);
+                points.push([this.unit, this.thickness])
+              points = points.concat([
+                [this.unit, this.step],
+                [this.unit - this.thickness, this.step],
+                [this.unit - this.thickness, this.step * 1.5],
+                [this.unit, this.step * 1.5],
+                [this.unit, this.step * 2.5],
+                [this.unit - this.thickness, this.step * 2.5],
+                [this.unit - this.thickness, this.step * 3],
+                [this.unit, this.step * 3],
+                [this.unit, this.unit - this.thickness],
+                [this.unit - this.thickness, this.unit - this.thickness]
+              ]);
           }
           if (sides.bottom) {
+              
               if (sides.right !== true) 
-                points.push([this.step * 4 - this.thickness, this.step * 4 - this.thickness]);
-              points.push([this.step * 3 + this.kerf, this.step * 4 - this.thickness]);
-              points.push([this.step * 3 + this.kerf, this.step * 4]);
-              points.push([this.step - this.kerf, this.step * 4]);
-              points.push([this.step - this.kerf, this.step * 4 - this.thickness]);
-              points.push([0, this.step * 4 - this.thickness]);
+                points.push([this.unit - this.thickness, this.unit - this.thickness])
+              points = points.concat([
+                [this.step * 3 + this.kerf, this.unit - this.thickness],
+                [this.step * 3 + this.kerf, this.unit],
+                [this.step * 2.5 - this.kerf, this.unit],
+                [this.step * 2.5 - this.kerf, this.unit - this.thickness],
+                [this.step * 1.5 + this.kerf, this.unit - this.thickness],
+                [this.step * 1.5 + this.kerf, this.unit],
+                [this.step - this.kerf, this.unit],
+                [this.step - this.kerf, this.unit - this.thickness],
+                [0, this.unit - this.thickness]
+              ]);
           }
           if (sides.left) {
               if (sides.bottom !== true) 
-                points.push([0, this.step * 4 - this.thickness]);
-              points.push([0, this.step * 3]);
-              points.push([this.thickness, this.step * 3]);
-              points.push([this.thickness, this.step]);
-              points.push([0, this.step]);
-              points.push([0, this.thickness]);
-              points.push([this.thickness, this.thickness]);
+                points.push([0, this.unit - this.thickness])
+              points = points.concat([
+                [0, this.step * 3],
+                [this.thickness, this.step * 3],
+                [this.thickness, this.step * 2.5],
+                [0, this.step  * 2.5],
+                [0, this.step  * 1.5],
+                [this.thickness, this.step * 1.5],
+                [this.thickness, this.step],
+                [0, this.step],
+                [0, this.thickness],
+                [this.thickness, this.thickness]
+              ]);
           }
         } else {
           if (sides.top) {
-              points.push([this.thickness, this.thickness]);
-              points.push([this.thickness, 0]);
-              points.push([this.step, 0]);
-              points.push([this.step, this.thickness]);
-              points.push([this.step * 3, this.thickness]);
-              points.push([this.step * 3, 0]);
-              points.push([this.step * 4 - this.thickness, 0]);
-              points.push([this.step * 4 - this.thickness, this.thickness]);
+              points = points.concat([
+                [this.thickness, this.thickness],
+                [this.thickness, 0],
+                [this.step, 0],
+                [this.step, this.thickness],
+                [this.step * 1.5, this.thickness],
+                [this.step * 1.5, 0],
+                [this.step * 2.5, 0],
+                [this.step * 2.5, this.thickness],              
+                [this.step * 3, this.thickness],
+                [this.step * 3, 0],
+                [this.unit - this.thickness, 0],
+                [this.unit - this.thickness, this.thickness]
+              ]);
           }
           if (sides.right) {
               if (sides.top !== true)
-                points.push([this.step * 4 - this.thickness, this.thickness]);
-              points.push([this.step * 4 - this.thickness, this.step]);
-              points.push([this.step * 4, this.step]);
-              points.push([this.step * 4, this.step * 3]);
-              points.push([this.step * 4 - this.thickness, this.step * 3]);
-              points.push([this.step * 4 - this.thickness, this.step * 4]);  
+                points.push([this.unit - this.thickness, this.thickness])
+              points = points.concat([
+                [this.unit - this.thickness, this.step - this.kerf],
+                [this.unit, this.step - this.kerf],
+                [this.unit, this.step * 1.5 + this.kerf],
+                [this.unit - this.thickness, this.step * 1.5 + this.kerf],
+                [this.unit - this.thickness, this.step * 2.5 - this.kerf],
+                [this.unit, this.step * 2.5 - this.kerf],
+                [this.unit, this.step * 3 + this.kerf],
+                [this.unit - this.thickness, this.step * 3 + this.kerf],
+                [this.unit - this.thickness, this.unit]
+              ]);
           }
           if (sides.bottom) {
               if (sides.right !== true)
-                points.push([this.step * 4 - this.thickness, this.step * 4]);
-              points.push([this.step * 3, this.step * 4]);
-              points.push([this.step * 3, this.step * 4 - this.thickness]);
-              points.push([this.step * 3, this.step * 4 - this.thickness]);
-              points.push([this.step, this.step * 4 - this.thickness]);
-              points.push([this.step, this.step * 4]);
-              points.push([this.thickness, this.step * 4]);
-              points.push([this.thickness, this.step * 4 - this.thickness]);
+                points.push([this.unit - this.thickness, this.unit])
+              points = points.concat([
+                [this.step * 3, this.unit],
+                [this.step * 3, this.unit - this.thickness],
+                [this.step * 2.5, this.unit - this.thickness],
+                [this.step * 2.5, this.unit],
+                [this.step * 1.5, this.unit],
+                [this.step * 1.5, this.unit - this.thickness],
+                [this.step, this.unit - this.thickness],
+                [this.step, this.unit],
+                [this.thickness, this.unit],
+                [this.thickness, this.unit - this.thickness]
+              ]);
           }
           if (sides.left) {
             if (sides.bottom !== true)
-              points.push([this.thickness, this.step * 4 - this.thickness]);
-            points.push([this.thickness, this.step * 3]);
-            points.push([0, this.step * 3]);
-            points.push([0, this.step]);
-            points.push([this.thickness, this.step]);
-            points.push([this.thickness, this.thickness]);
-            points.push([this.thickness, 0]);
+              points.push([this.thickness, this.unit - this.thickness])
+            points = points.concat([
+              [this.thickness, this.step * 3 + this.kerf],
+              [0, this.step * 3 + this.kerf],
+              [0, this.step * 2.5 - this.kerf],
+              [this.thickness, this.step * 2.5 - this.kerf],
+              [this.thickness, this.step * 1.5 + this.kerf],
+              [0, this.step * 1.5 + this.kerf],
+              [0, this.step],
+              [this.thickness, this.step],
+              [this.thickness, 0]
+            ]);
           }
         }
         return points;
