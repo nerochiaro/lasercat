@@ -4,7 +4,7 @@ requirejs.config({
 });
 
 requirejs(
-  ["libs/jquery-1.10.2.min", "libs/snap.svg-min", "jointhelper"],
+  ["libs/jquery-1.10.2.min", "libs/snap.svg", "jointhelper"],
   function(jquery, snap, jointhelper) {
     $(document).ready(function() {
       var REFLECTOR_URL = "http://localhost:7777/";
@@ -33,7 +33,7 @@ requirejs(
             var rotated = (i + (k % 2)) % 2 != 0;
             partGroup.add(je.s.polyline(sys.unitBox(null, rotated)));
             
-            partGroup.translate(distance * i, distance * k)
+            partGroup = partGroup.translate(distance * i, distance * k)
             g.add(partGroup);
           }
         }
@@ -43,14 +43,12 @@ requirejs(
       //gridOf1x1(6, 1, true, true).translate(0.01, 0.01).cut();
       
       function gridOf2x1(width, height, options) {       
-        var space = 2 * sys.kerf;
+        var space = (options.exploded) ? sys.step : 2 * sys.kerf;
         var elementWidth = sys.unit * 2 - sys.thickness;
         var elementHeight = sys.unit;
         var g = je.s.g();
         for (var k = 0; k < height; k++) {
           for (var i = 0; i < width; i++) {
-            var xpos = elementWidth * i + space * i;
-            var ypos = elementHeight * k + space * k;
             var unitGroup = je.s.g();
             unitGroup.add(
               je.s.polyline(sys.multiBox(2, 1))
@@ -61,27 +59,42 @@ requirejs(
                           elementWidth - 2 * sys.step, elementHeight - 2  * sys.step)
               )
             }
-            unitGroup.translate(xpos, ypos);
+            
+            var xpos, ypos;
+            if (options.rotated) {
+              unitGroup = unitGroup.rotate(90, 0, 0).translate(elementHeight, 0);
+              xpos = elementHeight * i + space * i;
+              ypos = elementWidth * k + space * k;
+            } else {
+              xpos = elementWidth * i + space * i;
+              ypos = elementHeight * k + space * k;
+            }
+            unitGroup = unitGroup.translate(xpos, ypos);
+            
             g.add(unitGroup);
           }
-        }
-        if (options.rotated) {
-          g.rotate(90);
-          g.translate(elementHeight - sys.thickness, 
-                      (elementWidth - sys.thickness) / 2);
         }
         return g;
       }
       
-     gridOf2x1(1, 1, { rotate: true, holes: true, exploded: true })
-     .translate(0.01, 0.01).cut();
+      gr = gridOf2x1(2, 3, { rotated: false, holes: true });
+      gr.cut();
     });
   }
 );
 
 //TODO:
 /*  
-- output the exploded box/structure preview in openjscad
+NEAR TERM
 - print raster marks around the bounding box of all the pieces to easily check alignement 
   when using scrap
+
+NEED CUTTER
+- slide-in and twist cross braces
+- half holes in 2x or larger pieces with notches, and holes in the offcuts
+- triangular units
+  
+WISHLIST
+- output the exploded box/structure preview in openjscad
+
 */

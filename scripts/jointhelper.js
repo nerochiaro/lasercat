@@ -66,7 +66,8 @@ define(["./primitives", "./modular"],
     prepare: function(id, useRulers, useGrid) {
       $("#output").width(bedWidth + "mm").height(bedHeight + "mm");
                 
-      this.s = Snap(id);
+      var s = Snap(id);
+      this.s = s;
       
       // Get the SVG DOM object so we can manipulate it directly.
       // JQuery will choke on it because there are some differences.
@@ -94,11 +95,94 @@ define(["./primitives", "./modular"],
         Element.prototype.fill = function (color) {
           return this.attr({ fill: (color) ? color : "none" });
         };
+        
+        /** Apply all transformations on the current element
+         * and replace it with a new element with the real points and no
+         * transform element.
+         * FIXME: currently this does not copy any attributes to the new element
+         */
+        Element.prototype.flatten = function(parentMatrix) {
+          // No transforms, nothing to do
+          if (!(this.matrix) && !(parentMatrix)) {
+            return this;
+          }
+
+          if (this.type == "g") {
+            var groupMatrix = (this.matrix) ? this.matrix : new Snap.Matrix();
+            if (parentMatrix) groupMatrix.add(parentMatrix);            
+                  
+            // collect the children in an array before iterating over
+            // them to flatten them recursively, otherwise when the flatten
+            // function removes them from the tree the iteration will break
+            var children = [];
+            for (var i = 0; i < this.node.childElementCount; i++) {
+              children.push(this[i]);
+            }
+
+            // FIXME: s.g sucks, there should be a way to get the Paper object
+            // from the group Element, but I can't find any.
+            var replacement = s.g();
+            children.forEach(function(child) {
+              var flatChild = child.flatten(groupMatrix);
+              replacement.add(flatChild);  
+            });
+            
+            this.remove();
+            return replacement;
+          } else if (this.type == "polyline" || this.type == "polygon") {
+
+            var matrix = (this.matrix) ? this.matrix : new Snap.Matrix();
+            if (parentMatrix) matrix.add(parentMatrix);
+                        
+            var points = this.node.points;
+            var flattened = [];
+            for (var i = 0; i < points.length; i++) {
+              var point = points[i];
+              flattened.push([matrix.x(point.x, point.y), 
+                              matrix.y(point.x, point.y)]);
+            }
+            var replacement = this.paper.polyline(flattened);
+            
+            this.remove();
+            return replacement;
+          } else if (this.type == "rect") {
+            var matrix = (this.matrix) ? this.matrix : new Snap.Matrix();
+            if (parentMatrix) matrix.add(parentMatrix);
+                    
+            var box = this.getBBox();
+            var points = [[box.x, box.y], [box.x2, box.y],
+                          [box.x2, box.y2], [box.x, box.y2],
+                          [box.x, box.y]];
+            var flattened = points.map(function(point) {
+              return [matrix.x(point[0], point[1]),
+                      matrix.y(point[0], point[1])]
+            });
+            var replacement = this.paper.polyline(flattened);
+            
+            this.remove();
+            return replacement;
+            
+          } else {
+            console.log("Element.flatten() works only on rects, polylines, polygons and group.");
+            return this;
+          }
+        }
+               
         Element.prototype.translate = function (x, y) {
           var m = new Snap.Matrix().translate(x, y);
           if (this.matrix) this.transform(this.matrix.add(m));
           else this.transform(m);
-          return this;
+          return this.flatten();
+        }
+        Element.prototype.scale = function (x, y, cx, cy) {
+          if (arguments.length == 2) {
+            var m = new Snap.Matrix().scale(x, y);
+          } else {
+            var m = new Snap.Matrix().scale(x, y, cx, cy);
+          }
+          if (this.matrix) this.transform(this.matrix.add(m));
+          else this.transform(m);
+          return this.flatten();
         }
         Element.prototype.rotate = function (a, x, y) {
           if (arguments.length == 1) {
@@ -109,8 +193,9 @@ define(["./primitives", "./modular"],
           var m = new Snap.Matrix().rotate(a, x, y);
           if (this.matrix) this.transform(this.matrix.add(m));
           else this.transform(m);
-          return this;
+          return this.flatten();
         }
+        
       });
       
       this.ui = this.s.g();
