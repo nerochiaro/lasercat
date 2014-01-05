@@ -40,7 +40,7 @@ requirejs(
         return g;
       }
       
-      //gridOf1x1(6, 1, true, true).translate(0.01, 0.01).cut();
+      //gridOf1x1(6, 1, true, false).translate(0.01, 0.01).cut();
       
       function gridOf2x1(width, height, options) {       
         var space = (options.exploded) ? sys.step : 2 * sys.kerf;
@@ -54,10 +54,43 @@ requirejs(
               je.s.polyline(sys.multiBox(2, 1))
             );
             if (options.holes) {
+//               unitGroup.add(
+//                 je.s.polyline([sys.step + sys.thickness + sys.kerf, sys.step],
+//                               [sys.step + sys.thickness + sys.kerf, elementHeight - sys.step])
+//               );
+//               unitGroup.add(
+//                 je.s.polyline([sys.step + elementWidth - 2 * sys.step - sys.thickness - sys.kerf, sys.step],
+//                               [sys.step + elementWidth - 2 * sys.step - sys.thickness - sys.kerf, elementHeight - sys.step])
+//               );
+// 
+//               unitGroup.add(
+//                 je.s.rect(sys.step + sys.thickness * 2 + sys.kerf * 2, sys.step * 1.5 + sys.kerf,
+//                           sys.thickness - sys.kerf, sys.step - sys.kerf)
+//               );
+//               unitGroup.add(
+//                 je.s.rect(sys.step + elementWidth - 2 * sys.step - sys.thickness * 3 - sys.kerf * 2,
+//                           sys.step * 1.5 + sys.kerf,
+//                           sys.thickness - sys.kerf, sys.step - sys.kerf)
+//               );
+              
               unitGroup.add(
-                je.s.rect(sys.step, sys.step,
-                          elementWidth - 2 * sys.step, elementHeight - 2  * sys.step)
-              )
+                je.s.polyline([
+                  [sys.step, sys.step],
+                  [sys.step + elementWidth - 2 * sys.step, sys.step],
+                  [sys.step + elementWidth - 2 * sys.step, sys.step * 1.5],
+                  [sys.step + elementWidth - 2 * sys.step - sys.thickness, sys.step * 1.5],
+                  [sys.step + elementWidth - 2 * sys.step - sys.thickness, sys.step * 2.5],
+                  [sys.step + elementWidth - 2 * sys.step, sys.step * 2.5],
+                  [sys.step + elementWidth - 2 * sys.step, sys.step * 3],
+                  [sys.step, sys.step * 3],
+                  [sys.step, sys.step * 2.5],
+                  [sys.step + sys.thickness, sys.step * 2.5],
+                  [sys.step + sys.thickness, sys.step * 1.5],
+                  [sys.step, sys.step * 1.5],
+                  [sys.step, sys.step],
+                ])
+              );
+
             }
             
             var xpos, ypos;
@@ -77,8 +110,13 @@ requirejs(
         return g;
       }
       
-      gr = gridOf2x1(2, 3, { rotated: false, holes: true });
-      gr.cut();
+      //gr = gridOf2x1(5, 1, { rotated: true, holes: false }).translate(0.01, 0.01)
+      //gr.cut()
+      
+      var shape = [[0, 1, 0],
+                   [1, 1, 1],
+                   [0, 1, 0]];
+      je.s.polyline(sys.arbitraryBox(shape)).cut();
     });
   }
 );
